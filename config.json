@@ -76,6 +76,21 @@
     "ikun": {
       "api": "https://ikunzyapi.com/api.php/provide/vod",
       "name": "iKun资源"
-    }
+    },
+  "lz": {
+    "api": "https://cj.lziapi.com/api.php/provide/vod/from/lzm3u8/?ac=list",
+    "name": "量子"
+  },
+  "360zy": {
+    "api": "https://360zy.com/api.php/provide/vod/from/360zy/?ac=list",
+    "name": "360资源"
+  },
+  "uku": {
+    "api": "https://api.ukuapi.com/api.php/provide/vod/from/ukm3u8/?ac=list",
+    "name": "U酷"
+  },
+  "okzy": {
+    "api": "https://api.okzy.org/api.php/provide/vod/from/okm3u8/?ac=list",
+    "name": "OK资源"
   }
 }
