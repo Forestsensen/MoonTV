@@ -84,6 +84,38 @@
     "xiaomaomi": {
       "api": "https://zy.xmm.hk/api.php/provide/vod",
       "name": "小猫咪资源"
+          },
+    "suonizy": {
+      "api": "https://suoniapi.com/api.php/provide/vod",
+      "name": "索尼"
+    },
+    "jiuyue": {
+      "api": "https://api.jiuyueapi.com/api.php/provide/vod",
+      "name": "九月"
+    },
+    "cjhwba": {
+      "api": "https://cjhwba.com/api.php/provide/vod",
+      "name": "华为"
+    },
+    "okzy": {
+      "api": "https://api.okzy.org/api.php/provide/vod",
+      "name": "OK资源"
+    },
+    "niuniu": {
+      "api": "https://api.niuniuzy.me/api.php/provide/vod",
+      "name": "牛牛"
+    },
+    "kuaikan": {
+      "api": "https://kuaikan-api.com/api.php/provide/vod",
+      "name": "快看"
+    },
+    "jiuyue": {
+      "api": "https://api.jiuyueapi.com/api.php/provide/vod",
+      "name": "九月"
+    },
+    "yk": {
+      "api": "https://api.ukuapi.com/api.php/provide/vod",
+      "name": "优酷"
     }
   }
 }
