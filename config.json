@@ -12,7 +12,7 @@
       "detail": "https://heimuer.tv"
     },
     "ruyi": {
-      "api": "http://cj.rycjapi.com/api.php/provide/vod",
+      "api": "https://cj.rycjapi.com/api.php/provide/vod",
       "name": "如意资源"
     },
     "bfzy": {
@@ -32,9 +32,9 @@
       "api": "https://360zy.com/api.php/provide/vod",
       "name": "360资源"
     },
-    "maotaizy": {
-      "api": "https://caiji.maotaizy.cc/api.php/provide/vod",
-      "name": "茅台资源"
+    "iqiyi": {
+      "api": "https://www.iqiyizyapi.com/api.php/provide/vod",
+      "name": "iqiyi资源"
     },
     "wolong": {
       "api": "https://wolongzyw.com/api.php/provide/vod",
@@ -84,7 +84,7 @@
     "xiaomaomi": {
       "api": "https://zy.xmm.hk/api.php/provide/vod",
       "name": "小猫咪资源"
-          },
+    },
     "suonizy": {
       "api": "https://suoniapi.com/api.php/provide/vod",
       "name": "索尼"
@@ -109,15 +109,12 @@
       "api": "https://kuaikan-api.com/api.php/provide/vod",
       "name": "快看"
     },
-    "jiuyue": {
-      "api": "https://api.jiuyueapi.com/api.php/provide/vod",
-      "name": "九月"
-    },
     "yk": {
       "api": "https://api.ukuapi.com/api.php/provide/vod",
       "name": "优酷"
-    },
-    "custom_category": [
+    }
+  },
+  "custom_category": [
     {
       "name": "动漫总览",
       "type": "movie",
@@ -154,5 +151,4 @@
       "query": "动漫 2023"
     }
   ]
- }
 }
