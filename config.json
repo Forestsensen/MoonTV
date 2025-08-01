@@ -117,7 +117,7 @@
       "api": "https://api.ukuapi.com/api.php/provide/vod",
       "name": "优酷"
     },
-  }"custom_category": [
+    "custom_category": [
     // 第一行：基础动漫分类
     {
       "name": "动漫总览",
