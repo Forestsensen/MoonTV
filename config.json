@@ -116,6 +116,47 @@
     "yk": {
       "api": "https://api.ukuapi.com/api.php/provide/vod",
       "name": "优酷"
+    },
+  }"custom_category": [
+    // 第一行：基础动漫分类
+    {
+      "name": "动漫总览",
+      "type": "movie",
+      "query": "动漫"
+    },
+    
+    // 第二行：地区分类
+    {
+      "name": "国产动漫",
+      "type": "movie",
+      "query": "国产动漫"
+    },
+    {
+      "name": "日本动漫",
+      "type": "movie",
+      "query": "日本动漫"
+    },
+    {
+      "name": "欧美动画",
+      "type": "movie",
+      "query": "欧美动画"
+    },
+    
+    // 第三行：年份筛选
+    {
+      "name": "2025",
+      "type": "movie",
+      "query": "动漫 2025"
+    },
+    {
+      "name": "2024",
+      "type": "movie",
+      "query": "动漫 2024"
+    },
+    {
+      "name": "2023",
+      "type": "movie",
+      "query": "动漫 2023"
     }
-  }
+  ]
 }
