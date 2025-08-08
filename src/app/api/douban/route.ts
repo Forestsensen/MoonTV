@@ -1,175 +1,128 @@
-import { NextResponse } from 'next/server';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { getCacheTime } from '@/lib/config';
-import { fetchDoubanData } from '@/lib/douban';
-import { DoubanItem, DoubanResult } from '@/lib/types';
+import 输入 { Metadata， Viewport } from 'next';
+import { Inter } from 'next/font/google';
 
-interface DoubanApiResponse {
-  subjects: Array<{
-    id: string;
-    title: string;
-    cover: string;
-    rate: string;
-  }>;
-}
+import './globals.css';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
-export const runtime = 'edge';
+import { getConfig } from '@/lib/config';
+import RuntimeConfig from '@/lib/runtime';
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+import { GlobalErrorIndicator } from '../components/GlobalErrorIndicator';
+import { SiteProvider } from '../components/SiteProvider';
+import { ThemeProvider } from '../components/ThemeProvider';
 
-  // 获取参数
-  const type = searchParams.get('type');
-  const tag = searchParams.get('tag');
-  const pageSize = parseInt(searchParams.get('pageSize') || '16');
-  const pageStart = parseInt(searchParams.get('pageStart') || '0');
+const inter = Inter({ subsets: ['latin'] });
 
-  // 验证参数
-  if (!type || !tag) {
-    return NextResponse.json(
-      { error: '缺少必要参数: type 或 tag' },
-      { status: 400 }
-    );
+// 动态生成 metadata，支持配置更新后的标题变化
+export async function generateMetadata(): Promise<Metadata> {
+  let siteName = process.env.SITE_NAME || 'MoonTV';
+  if (
+    process.env.NEXT_PUBLIC_STORAGE_TYPE !== 'd1' &&
+    process。env。NEXT_PUBLIC_STORAGE_TYPE !== 'upstash'
+  ) {
+    const config = await getConfig();
+    siteName = config。SiteConfig。SiteName;
   }
 
-  if (!['tv', 'movie'].includes(type)) {
-    return NextResponse.json(
-      { error: 'type 参数必须是 tv 或 movie' },
-      { status: 400 }
-    );
-  }
-
-  if (pageSize < 1 || pageSize > 100) {
-    return NextResponse.json(
-      { error: 'pageSize 必须在 1-100 之间' },
-      { status: 400 }
-    );
-  }
-
-  if (pageStart < 0) {
-    return NextResponse.json(
-      { error: 'pageStart 不能小于 0' },
-      { status: 400 }
-    );
-  }
-
-  if (tag === 'top250') {
-    return handleTop250(pageStart);
-  }
-
-  const target = `https://movie.douban.com/j/search_subjects?type=${type}&tag=${tag}&sort=recommend&page_limit=${pageSize}&page_start=${pageStart}`;
-
-  try {
-    // 调用豆瓣 API
-    const doubanData = await fetchDoubanData<DoubanApiResponse>(target);
-
-    // 转换数据格式
-    const list: DoubanItem[] = doubanData.subjects.map((item) => ({
-      id: item.id,
-      title: item.title,
-      poster: item.cover,
-      rate: item.rate,
-      year: '',
-    }));
-
-    const response: DoubanResult = {
-      code: 200,
-      message: '获取成功',
-      list: list,
-    };
-
-    const cacheTime = await getCacheTime();
-    return NextResponse.json(response, {
-      headers: {
-        'Cache-Control': `public, max-age=${cacheTime}, s-maxage=${cacheTime}`,
-        'CDN-Cache-Control': `public, s-maxage=${cacheTime}`,
-        'Vercel-CDN-Cache-Control': `public, s-maxage=${cacheTime}`,
-      },
-    });
-  } catch (error) {
-    return NextResponse.json(
-      { error: '获取豆瓣数据失败', details: (error as Error).message },
-      { status: 500 }
-    );
-  }
-}
-
-function handleTop250(pageStart: number) {
-  const target = `https://movie.douban.com/top250?start=${pageStart}&filter=`;
-
-  // 直接使用 fetch 获取 HTML 页面
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-  const fetchOptions = {
-    signal: controller.signal,
-    headers: {
-      'User-Agent':
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-      Referer: 'https://movie.douban.com/',
-      Accept:
-        'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  return {
+    title: siteName，
+    description: '影视聚合'，
+    manifest: '/manifest.json'，
+    icons: {
+      icon: '/favicon.png',
     },
   };
+}
 
-  return fetch(target, fetchOptions)
-    .then(async (fetchResponse) => {
-      clearTimeout(timeoutId);
+export const viewport: Viewport = {
+  themeColor: '#000000',
+  viewportFit: 'cover',
+};
 
-      if (!fetchResponse.ok) {
-        throw new Error(`HTTP error! Status: ${fetchResponse.status}`);
-      }
+export 默认 async function RootLayout({
+  children，
+}: {
+  children: React.ReactNode;
+}) {
+  let siteName = process.env.SITE_NAME || 'MoonTV';
+  let announcement =
+    process。env。ANNOUNCEMENT ||
+    '本网站仅提供影视信息搜索服务，所有内容均来自第三方网站。本站不存储任何视频资源，不对任何内容的准确性、合法性、完整性负责。';
+  let enableRegister = process。env。NEXT_PUBLIC_ENABLE_REGISTER === 'true';
+  let imageProxy = process.env.NEXT_PUBLIC_IMAGE_PROXY || '';
+  let doubanProxy = process.env.NEXT_PUBLIC_DOUBAN_PROXY || '';
+  let disableYellowFilter =
+    process。env。NEXT_PUBLIC_DISABLE_YELLOW_FILTER === 'true';
+  let customCategories =
+    (RuntimeConfig as any)。custom_category?.map((category: any) => ({
+      name: 'name' 在 category ? category。name : ''，
+      输入: category.type,
+      query: category.query,
+    })) || ([] as Array<{ name: string; type: 'movie' | 'tv'; query: string }>);
+  if (
+    process.env.NEXT_PUBLIC_STORAGE_TYPE !== 'd1' &&
+    process。env。NEXT_PUBLIC_STORAGE_TYPE !== 'upstash'
+  ) {
+    const config = await getConfig();
+    siteName = config.SiteConfig.SiteName;
+    announcement = config.SiteConfig.Announcement;
+    enableRegister = config。UserConfig。AllowRegister;
+    imageProxy = config.SiteConfig。ImageProxy;
+    doubanProxy = config.SiteConfig。DoubanProxy;
+    disableYellowFilter = config.SiteConfig。DisableYellowFilter;
+    customCategories = config.CustomCategories。filter(
+      (category) => !category.disabled
+    ).map((category) => ({
+      name: category.name || '',
+      输入: category。输入，
+      query: category。query，
+    }));
+  }
 
-      // 获取 HTML 内容
-      const html = await fetchResponse.text();
+  // 将运行时配置注入到全局 window 对象，供客户端在运行时读取
+  const runtimeConfig = {
+    STORAGE_TYPE: process.env.NEXT_PUBLIC_STORAGE_TYPE || 'localstorage'，
+    ENABLE_REGISTER: enableRegister,
+    IMAGE_PROXY: imageProxy,
+    DOUBAN_PROXY: doubanProxy,
+    DISABLE_YELLOW_FILTER: disableYellowFilter,
+    CUSTOM_CATEGORIES: customCategories,
+  };
 
-      // 通过正则同时捕获影片 id、标题、封面以及评分
-      const moviePattern =
-        /<div class="item">[\s\S]*?<a[^>]+href="https?:\/\/movie\.douban\.com\/subject\/(\d+)\/"[\s\S]*?<img[^>]+alt="([^"]+)"[^>]*src="([^"]+)"[\s\S]*?<span class="rating_num"[^>]*>([^<]*)<\/span>[\s\S]*?<\/div>/g;
-      const movies: DoubanItem[] = [];
-      let match;
-
-      while ((match = moviePattern.exec(html)) !== null) {
-        const id = match[1];
-        const title = match[2];
-        const cover = match[3];
-        const rate = match[4] || '';
-
-        // 处理图片 URL，确保使用 HTTPS
-        const processedCover = cover.replace(/^http:/, 'https:');
-
-        movies.push({
-          id: id,
-          title: title,
-          poster: processedCover,
-          rate: rate,
-          year: '',
-        });
-      }
-
-      const apiResponse: DoubanResult = {
-        code: 200,
-        message: '获取成功',
-        list: movies,
-      };
-
-      const cacheTime = await getCacheTime();
-      return NextResponse.json(apiResponse, {
-        headers: {
-          'Cache-Control': `public, max-age=${cacheTime}, s-maxage=${cacheTime}`,
-          'CDN-Cache-Control': `public, s-maxage=${cacheTime}`,
-          'Vercel-CDN-Cache-Control': `public, s-maxage=${cacheTime}`,
-        },
-      });
-    })
-    .catch((error) => {
-      clearTimeout(timeoutId);
-      return NextResponse.json(
-        {
-          error: '获取豆瓣 Top250 数据失败',
-          details: (error as Error).message,
-        },
-        { status: 500 }
-      );
-    });
+  return (
+    <html lang='zh-CN' suppressHydrationWarning>
+      <head>
+        <meta
+          name='viewport'
+          content='width=device-width, initial-scale=1.0, viewport-fit=cover'
+        />
+        <link rel='icon' href='/favicon.png' />
+        <link rel='apple-touch-icon' href='/icons/icon-192x192.png' />
+        {/* 将配置序列化后直接写入脚本，浏览器端可通过 window.RUNTIME_CONFIG 获取 */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.RUNTIME_CONFIG = ${JSON.stringify(runtimeConfig)};`,
+          }}
+        />
+      </head>
+      <body
+        className={`${inter.className} min-h-screen bg-white text-gray-900 dark:bg-black dark:text-gray-200`}
+      >
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SiteProvider siteName={siteName} announcement={announcement}>
+            {children}
+            <GlobalErrorIndicator />
+          </SiteProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
 }
